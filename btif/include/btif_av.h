@@ -235,6 +235,16 @@ void btif_av_clear_remote_suspend_flag(void);
  ******************************************************************************/
 bool btif_av_peer_supports_3mbps(void);
 
+/**
+ *
+ * Check whether the mandatory codec is more preferred for this peer.
+ *
+ * @param peer_address the target peer address
+ *
+ * @return true if optional codecs are not preferred to be used
+ */
+bool btif_av_peer_prefers_mandatory_codec(const RawAddress& peer_address);
+
 /*******************************************************************************
 **
 ** Function         btif_av_check_flag_remote_suspend
@@ -560,6 +570,7 @@ int btif_get_max_allowable_sink_connections();
 *******************************************************************************/
 tBTA_AV_HNDL btif_av_get_hndl_by_addr(RawAddress peer_address);
 
+bool btif_device_in_sink_role();
 void btif_av_signal_session_ready();
 void btif_av_set_suspend_rsp_track_timer(int index);
 void btif_av_set_suspend_rsp_track_timer_tout(void* data);
