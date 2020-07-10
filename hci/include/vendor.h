@@ -102,19 +102,27 @@ typedef enum {
   BT_SOC_REASON_WATCHDOG       =  0x91,
 
   // Transport Driver Crash Reasons
-  BT_SOC_REASON_UARTINIT_STUCK        =  0xB1,
-  BT_SOC_REASON_GETVER_SEND_STUCK     =  0xB2,
-  BT_SOC_REASON_GETVER_NO_RSP_RCVD    =  0xB3,
-  BT_SOC_REASON_SETBAUDRATE_CMD_STUCK =  0xB4,
-  BT_SOC_REASON_PATCH_DNLD_STUCK      =  0xB5,
-  BT_SOC_REASON_GETBOARDID_CMD_STUCK  =  0xB6,
-  BT_SOC_REASON_NVM_DNLD_STUCK        =  0xB7,
-  BT_SOC_REASON_HCI_RESET_STUCK       =  0xB8,
-  BT_SOC_REASON_GETBLDINFO_CMD_STUCK  =  0xB9,
-  BT_SOC_REASON_ADDONFEAT_CMD_STUCK   =  0xBA,
-  BT_SOC_REASON_ENHLOG_CMD_STUCK      =  0xBB,
-  BT_SOC_REASON_DIAGINIT_STUCK        =  0xBC,
-  BT_SOC_REASON_DIAGDEINIT_STUCK      =  0xBD,
+  BT_HOST_REASON_UARTINIT_STUCK        =  0xB1,
+  BT_HOST_REASON_GETVER_SEND_STUCK     =  0xB2,
+  BT_HOST_REASON_GETVER_NO_RSP_RCVD    =  0xB3,
+  BT_HOST_REASON_SETBAUDRATE_CMD_STUCK =  0xB4,
+  BT_HOST_REASON_PATCH_DNLD_STUCK      =  0xB5,
+  BT_HOST_REASON_GETBOARDID_CMD_STUCK  =  0xB6,
+  BT_HOST_REASON_NVM_DNLD_STUCK        =  0xB7,
+  BT_HOST_REASON_HCI_RESET_STUCK       =  0xB8,
+  BT_HOST_REASON_GETBLDINFO_CMD_STUCK  =  0xB9,
+  BT_HOST_REASON_ADDONFEAT_CMD_STUCK   =  0xBA,
+  BT_HOST_REASON_ENHLOG_CMD_STUCK      =  0xBB,
+  BT_HOST_REASON_DIAGINIT_STUCK        =  0xBC,
+  BT_HOST_REASON_DIAGDEINIT_STUCK      =  0xBD,
+  BT_HOST_REASON_XMEM_NVM_DNLD_STUCK   =  0xBE,
+  BT_HOST_REASON_XMEM_PATCH_DNLD_STUCK =  0xBF,
+  BT_HOST_REASON_SECURE_BRIDGE_CMD_STUCK = 0xC2,
+  BT_HOST_REASON_FAILED_TO_SEND_CMD              =  0xC3,
+  BT_HOST_REASON_HCI_RESET_CC_NOT_RCVD           =  0xC4,
+  BT_HOST_REASON_HCI_PRE_SHUTDOWN_CC_NOT_RCVD    =  0xC5,
+  BT_HOST_REASON_HCI_SET_BD_ADDRESS_CC_NOT_RCVD  =  0xC6,
+  BT_HOST_REASON_FAILED_TO_RECEIVE_SLEEP_IND     =  0xC7,
 } soc_crash_reason_e;
 
 typedef struct {
@@ -146,19 +154,27 @@ static secondary_reason secondary_crash_reason [] = {
 { BT_SOC_REASON_SSR_CMD                  ,    "SSR CMD"},
 { BT_SOC_REASON_POWERON                  ,    "Power ON"},
 { BT_SOC_REASON_WATCHDOG                 ,    "Watchdog"},
-{ BT_SOC_REASON_UARTINIT_STUCK           ,    "UartInitStuck"},
-{ BT_SOC_REASON_GETVER_SEND_STUCK        ,    "GetVerSendStuck"},
-{ BT_SOC_REASON_GETVER_NO_RSP_RCVD       ,    "GetVerNoRspRcvd"},
-{ BT_SOC_REASON_SETBAUDRATE_CMD_STUCK    ,    "SetBaudRateStuck"},
-{ BT_SOC_REASON_PATCH_DNLD_STUCK         ,    "PatchDnldStuck"},
-{ BT_SOC_REASON_GETBOARDID_CMD_STUCK     ,    "GetBoardIdStuck"},
-{ BT_SOC_REASON_NVM_DNLD_STUCK           ,    "NvmDnldStuck"},
-{ BT_SOC_REASON_HCI_RESET_STUCK          ,    "HciResetStuck"},
-{ BT_SOC_REASON_GETBLDINFO_CMD_STUCK     ,    "GetBldInfoCmdStuck"},
-{ BT_SOC_REASON_ADDONFEAT_CMD_STUCK      ,    "AddOnFeatCmdStuck"},
-{ BT_SOC_REASON_ENHLOG_CMD_STUCK         ,    "EnhLogCmdStuck"},
-{ BT_SOC_REASON_DIAGINIT_STUCK           ,    "DiagInitStuck"},
-{ BT_SOC_REASON_DIAGDEINIT_STUCK         ,    "DiagDeinitStuck"},
+{ BT_HOST_REASON_UARTINIT_STUCK           ,    "UartInitStuck"},
+{ BT_HOST_REASON_GETVER_SEND_STUCK        ,    "GetVerSendStuck"},
+{ BT_HOST_REASON_GETVER_NO_RSP_RCVD       ,    "GetVerNoRspRcvd"},
+{ BT_HOST_REASON_SETBAUDRATE_CMD_STUCK    ,    "SetBaudRateStuck"},
+{ BT_HOST_REASON_PATCH_DNLD_STUCK         ,    "PatchDnldStuck"},
+{ BT_HOST_REASON_GETBOARDID_CMD_STUCK     ,    "GetBoardIdStuck"},
+{ BT_HOST_REASON_NVM_DNLD_STUCK           ,    "NvmDnldStuck"},
+{ BT_HOST_REASON_HCI_RESET_STUCK          ,    "HciResetStuck"},
+{ BT_HOST_REASON_GETBLDINFO_CMD_STUCK     ,    "GetBldInfoCmdStuck"},
+{ BT_HOST_REASON_ADDONFEAT_CMD_STUCK      ,    "AddOnFeatCmdStuck"},
+{ BT_HOST_REASON_ENHLOG_CMD_STUCK         ,    "EnhLogCmdStuck"},
+{ BT_HOST_REASON_DIAGINIT_STUCK           ,    "DiagInitStuck"},
+{ BT_HOST_REASON_DIAGDEINIT_STUCK         ,    "DiagDeinitStuck"},
+{ BT_HOST_REASON_XMEM_NVM_DNLD_STUCK      ,    "XMEM NVM Download stuck"},
+{ BT_HOST_REASON_XMEM_PATCH_DNLD_STUCK    ,    "XMEM patch download stuck"},
+{ BT_HOST_REASON_SECURE_BRIDGE_CMD_STUCK  ,    "Secure bridge cmd stuck"},
+{ BT_HOST_REASON_FAILED_TO_SEND_CMD            , "Failed to send internal cmd"},
+{ BT_HOST_REASON_HCI_RESET_CC_NOT_RCVD         , "HCI Reset Cmd CC NotRcvd"},
+{ BT_HOST_REASON_HCI_PRE_SHUTDOWN_CC_NOT_RCVD  , "HCI Pre shutdown Cmd CC not Rcvd"},
+{ BT_HOST_REASON_HCI_SET_BD_ADDRESS_CC_NOT_RCVD, "HCI BD address CC not Rcvd"},
+{ BT_HOST_REASON_FAILED_TO_RECEIVE_SLEEP_IND   , "Failed to receive SLEEP IND from SoC"}
 };
 
 enum host_crash_reason_e  {
@@ -182,6 +198,9 @@ enum host_crash_reason_e  {
   BT_HOST_REASON_SOC_CRASHED_DIAG_SSR_SOC_WAIT_TIMEOUT = 0x24, //SOC CRASHED DIAG INITIATED SSR CRASH WAIT TIMEOUT
   BT_HOST_REASON_NONE_SOC_WAIT_TIMEOUT = 0x25,                 //INVALID FAILURE AND SOC CRASH WAIT TIMEOUT
   BT_HOST_REASON_SOC_DEINIT_STUCK = 0x26,                      //SOC DEINIT STUCK
+  BT_HOST_REASON_SSR_INTERNAL_CMD_TIMEDOUT = 0x27,             //SSR DUE TO CMD INTERNAL TIMED OUT
+  BT_HOST_REASON_FAILED_TO_SEND_INTERNAL_CMD = 0x28,           //FAILED TO SEND INTERNAL CMD
+  BT_HOST_REASON_SSR_SLEEP_IND_NOT_RCVD = 0x29,                //SOC DID NOT RCVD SLEEP IND DURING CLOSE
 };
 
 typedef struct {
@@ -211,6 +230,9 @@ static primary_reason primary_crash_reason [] = {
 { BT_HOST_REASON_SOC_CRASHED_DIAG_SSR_SOC_WAIT_TIMEOUT, "SOC crashed with diag initiated SSR and SOC wait timeout"},
 { BT_HOST_REASON_NONE_SOC_WAIT_TIMEOUT                , "Invalid Reason and SOC crash wait timeout"},
 { BT_HOST_REASON_SOC_DEINIT_STUCK                     , "SOC DeInit Stuck"},
+{ BT_HOST_REASON_SSR_INTERNAL_CMD_TIMEDOUT            , "SSR due to internal Command timeout"},
+{ BT_HOST_REASON_FAILED_TO_SEND_INTERNAL_CMD          , "Failed to send internal command"},
+{ BT_HOST_REASON_SSR_SLEEP_IND_NOT_RCVD               , "Failed to receive SLEEP IND during close"},
 };
 
 void decode_crash_reason(uint8_t* p, uint8_t evt_len);
