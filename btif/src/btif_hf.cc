@@ -66,6 +66,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <hardware/bluetooth_headset_interface.h>
 #include <hardware/bt_hf.h>
 #include <log/log.h>
+#include "device/include/interop.h"
 
 #include "bta/include/bta_ag_api.h"
 #if (SWB_ENABLED == TRUE)
@@ -132,6 +133,8 @@ static uint32_t btif_hf_features = BTIF_HF_FEATURES;
 
 /* Assigned number for mSBC codec */
 #define BTA_AG_MSBC_CODEC 5
+
+#define BTA_AG_CALL_INDEX 1
 
 /* Max HF clients supported from App */
 uint16_t btif_max_hf_clients = 1;
@@ -1637,6 +1640,11 @@ bt_status_t HeadsetInterface::ClccResponse(int index, bthf_call_direction_t dir,
     if (index == 0) {
       ag_res.ok_flag = BTA_AG_OK_DONE;
     } else {
+      bool is_ind_blacklisted = interop_match_addr_or_name(INTEROP_SKIP_INCOMING_STATE, bd_addr);
+      if (is_ind_blacklisted && index > BTA_AG_CALL_INDEX && state == BTHF_CALL_STATE_INCOMING) {
+              BTIF_TRACE_ERROR("%s: device is blacklisted for incoming state %d", __func__, idx);
+              state = BTHF_CALL_STATE_WAITING;
+      }
       BTIF_TRACE_EVENT(
           "clcc_response: [%d] dir %d state %d mode %d number = %s type = %d",
           index, dir, state, mode, number, type);
@@ -1886,9 +1894,12 @@ bt_status_t HeadsetInterface::PhoneStateChange(
                  strcmp(value, "true")) {
               if (is_active_device(*bd_addr) &&
                   get_connected_dev_count() == 1) {
-                BTIF_TRACE_IMP("%s, pts property is set to false, send BSIR 1", __func__);
+                // send BSIR:1 only if BSIR:0 was sent earlier
+                if (BTA_AgInbandEnabled(control_block.handle) == false) {
+                  BTIF_TRACE_IMP("%s, pts property is set to false, send BSIR 1", __func__);
 
-                SendBsir(1, bd_addr);
+                  SendBsir(1, bd_addr);
+                }
                 ag_res.audio_handle = control_block.handle;
                 btif_transfer_context(btif_in_hf_generic_evt, BTIF_HFP_CB_AUDIO_CONNECTING,
                     (char*)(&btif_hf_cb[idx].connected_bda), sizeof(RawAddress), NULL);
