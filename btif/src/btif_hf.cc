@@ -66,6 +66,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <hardware/bluetooth_headset_interface.h>
 #include <hardware/bt_hf.h>
 #include <log/log.h>
+#include "device/include/interop.h"
 
 #include "bta/include/bta_ag_api.h"
 #if (SWB_ENABLED == TRUE)
@@ -132,6 +133,8 @@ static uint32_t btif_hf_features = BTIF_HF_FEATURES;
 
 /* Assigned number for mSBC codec */
 #define BTA_AG_MSBC_CODEC 5
+
+#define BTA_AG_CALL_INDEX 1
 
 /* Max HF clients supported from App */
 uint16_t btif_max_hf_clients = 1;
@@ -642,19 +645,31 @@ static void btif_hf_upstreams_evt(uint16_t event, char* p_param) {
       break;
 
     case BTA_AG_AUDIO_OPENING_EVT:
-      BTIF_TRACE_DEBUG("%s:  Moving the audio_state to CONNECTING for device %s",
-                      __FUNCTION__, btif_hf_cb[idx].connected_bda.ToString().c_str());
-      btif_hf_cb[idx].audio_state = BTHF_AUDIO_STATE_CONNECTING;
-      HAL_HF_CBACK(bt_hf_callbacks, AudioStateCallback, BTHF_AUDIO_STATE_CONNECTING,
-                &btif_hf_cb[idx].connected_bda);
+      if (btif_hf_cb[idx].state == BTHF_CONNECTION_STATE_DISCONNECTED ||
+          btif_hf_cb[idx].state == BTHF_CONNECTION_STATE_DISCONNECTING) {
+        BTIF_TRACE_WARNING("%s: Ignoring event BTA_AG_AUDIO_OPENING_EVT, btif_hf_cb[idx].state:%d",
+                          __FUNCTION__, btif_hf_cb[idx].state);
+      } else {
+        BTIF_TRACE_DEBUG("%s:  Moving the audio_state to CONNECTING for device %s",
+                        __FUNCTION__, btif_hf_cb[idx].connected_bda.ToString().c_str());
+        btif_hf_cb[idx].audio_state = BTHF_AUDIO_STATE_CONNECTING;
+        HAL_HF_CBACK(bt_hf_callbacks, AudioStateCallback, BTHF_AUDIO_STATE_CONNECTING,
+                  &btif_hf_cb[idx].connected_bda);
+      }
       break;
 
     case BTA_AG_AUDIO_OPEN_EVT:
-      BTIF_TRACE_DEBUG("%s: Moving the audio_state to CONNECTED for device %s",
-                      __FUNCTION__, btif_hf_cb[idx].connected_bda.ToString().c_str());
-      btif_hf_cb[idx].audio_state = BTHF_AUDIO_STATE_CONNECTED;
-      HAL_HF_CBACK(bt_hf_callbacks, AudioStateCallback, BTHF_AUDIO_STATE_CONNECTED,
-                &btif_hf_cb[idx].connected_bda);
+      if (btif_hf_cb[idx].state == BTHF_CONNECTION_STATE_DISCONNECTED ||
+          btif_hf_cb[idx].state == BTHF_CONNECTION_STATE_DISCONNECTING) {
+        BTIF_TRACE_WARNING("%s: Ignoring event BTA_AG_AUDIO_OPEN_EVT, btif_hf_cb[idx].state:%d",
+                          __FUNCTION__, btif_hf_cb[idx].state);
+      } else {
+        BTIF_TRACE_DEBUG("%s: Moving the audio_state to CONNECTED for device %s",
+                        __FUNCTION__, btif_hf_cb[idx].connected_bda.ToString().c_str());
+        btif_hf_cb[idx].audio_state = BTHF_AUDIO_STATE_CONNECTED;
+        HAL_HF_CBACK(bt_hf_callbacks, AudioStateCallback, BTHF_AUDIO_STATE_CONNECTED,
+                  &btif_hf_cb[idx].connected_bda);
+      }
       break;
 
     case BTA_AG_AUDIO_CLOSE_EVT:
@@ -1637,6 +1652,11 @@ bt_status_t HeadsetInterface::ClccResponse(int index, bthf_call_direction_t dir,
     if (index == 0) {
       ag_res.ok_flag = BTA_AG_OK_DONE;
     } else {
+      bool is_ind_blacklisted = interop_match_addr_or_name(INTEROP_SKIP_INCOMING_STATE, bd_addr);
+      if (is_ind_blacklisted && index > BTA_AG_CALL_INDEX && state == BTHF_CALL_STATE_INCOMING) {
+              BTIF_TRACE_ERROR("%s: device is blacklisted for incoming state %d", __func__, idx);
+              state = BTHF_CALL_STATE_WAITING;
+      }
       BTIF_TRACE_EVENT(
           "clcc_response: [%d] dir %d state %d mode %d number = %s type = %d",
           index, dir, state, mode, number, type);
