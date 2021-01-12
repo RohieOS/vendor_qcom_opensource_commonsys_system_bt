@@ -1665,6 +1665,7 @@ void bta_av_conn_chg(tBTA_AV_DATA* p_data) {
  *
  ******************************************************************************/
 void bta_av_disable(tBTA_AV_CB* p_cb, UNUSED_ATTR tBTA_AV_DATA* p_data) {
+  APPL_TRACE_WARNING("%s ",__func__);
   BT_HDR hdr;
   uint16_t xx;
 
@@ -1692,6 +1693,8 @@ void bta_av_disable(tBTA_AV_CB* p_cb, UNUSED_ATTR tBTA_AV_DATA* p_data) {
   p_cb->browsing_channel_open_timer = NULL;
   alarm_free(p_cb->link_signalling_timer);
   p_cb->link_signalling_timer = NULL;
+
+  bta_sys_collision_register(BTA_ID_AV, NULL);
 }
 
 /*******************************************************************************
