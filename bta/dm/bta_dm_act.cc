@@ -1642,6 +1642,7 @@ void bta_dm_inq_cmpl(tBTA_DM_MSG* p_data) {
   if (bta_dm_search_cb.p_btm_inq_info != NULL) {
     /* start name and service discovery from the first device on inquiry result
      */
+    bta_dm_search_cb.no_inq_rnr_done = 0;
     bta_dm_search_cb.name_discover_done = false;
     bta_dm_search_cb.peer_name[0] = 0;
     bta_dm_search_cb.transport = BTA_TRANSPORT_UNKNOWN;
@@ -2092,6 +2093,7 @@ void bta_dm_sdp_result(tBTA_DM_MSG* p_data) {
 void bta_dm_search_cmpl(tBTA_DM_MSG* p_data) {
   APPL_TRACE_EVENT("%s", __func__);
 
+  bta_dm_search_cb.no_inq_rnr_done = 0;
   osi_free_and_reset((void**)&bta_dm_search_cb.p_srvc_uuid);
 
   if (p_data->hdr.layer_specific == BTA_DM_API_DI_DISCOVER_EVT)
@@ -2437,6 +2439,7 @@ static void bta_dm_discover_next_device(void) {
     tBTA_DM_MSG* p_msg = (tBTA_DM_MSG*)osi_malloc(sizeof(tBTA_DM_MSG));
 
     /* no devices, search complete */
+    bta_dm_search_cb.no_inq_rnr_done = 0;
     bta_dm_search_cb.services = 0;
 
     p_msg->hdr.event = BTA_DM_SEARCH_CMPL_EVT;
@@ -2482,11 +2485,15 @@ static void bta_dm_discover_device(const RawAddress& remote_bd_addr) {
     APPL_TRACE_DEBUG("%s appl_knows_rem_name %d", __func__,
                      bta_dm_search_cb.p_btm_inq_info->appl_knows_rem_name);
   }
-  if ((bta_dm_search_cb.p_btm_inq_info) &&
-      (bta_dm_search_cb.p_btm_inq_info->results.device_type ==
-       BT_DEVICE_TYPE_BLE) &&
-      (bta_dm_search_cb.state == BTA_DM_SEARCH_ACTIVE)) {
+  if ((bta_dm_search_cb.state == BTA_DM_SEARCH_ACTIVE) &&
+      (bta_dm_search_cb.p_btm_inq_info) &&
+      ((bta_dm_search_cb.p_btm_inq_info->results.device_type ==
+       BT_DEVICE_TYPE_BLE) ||
+       (bta_dm_search_cb.no_inq_rnr_done >= BTA_MAX_INQUIRY_RNR))) {
     /* Do not perform RNR for LE devices at inquiry complete*/
+    APPL_TRACE_DEBUG("%s no_inq_rnr_done reached max %d or LE device %d", __func__,
+                      bta_dm_search_cb.no_inq_rnr_done,
+                      bta_dm_search_cb.p_btm_inq_info->results.device_type);
     bta_dm_search_cb.name_discover_done = true;
   }
   /* if name discovery is not done and application needs remote name */
@@ -2498,6 +2505,11 @@ static void bta_dm_discover_device(const RawAddress& remote_bd_addr) {
                                        transport) == true) {
       /* Continue the service search on same transport after rnr complete */
       bta_dm_search_cb.transport = transport;
+      if (bta_dm_search_cb.state == BTA_DM_SEARCH_ACTIVE) {
+        bta_dm_search_cb.no_inq_rnr_done++;
+        APPL_TRACE_DEBUG("%s Num of RNR initiated so far %d", __func__,
+                          bta_dm_search_cb.no_inq_rnr_done);
+      }
       return;
     }
     /* starting name discovery failed */
