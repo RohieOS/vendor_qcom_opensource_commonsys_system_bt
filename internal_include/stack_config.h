@@ -43,6 +43,8 @@ typedef struct {
   int (*get_pts_bredr_invalid_encryption_keysize)(void);
   int (*get_pts_le_enc_disable)(void);
   int (*get_pts_smp_disable_h7_support)(void);
+  const char* (*get_le_rf_tx_path_compensation_value)(void);
+  const char* (*get_le_rf_rx_path_compensation_value)(void);
   config_t* (*get_all)(void);
 } stack_config_t;
 

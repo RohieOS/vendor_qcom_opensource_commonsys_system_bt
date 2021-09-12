@@ -29,6 +29,7 @@
 #include "hcimsgs.h"
 #include "osi/include/future.h"
 #include "osi/include/properties.h"
+#include "internal_include/stack_config.h"
 #include "stack/include/btm_ble_api.h"
 #include "osi/include/log.h"
 #include "utils/include/bt_utils.h"
@@ -92,6 +93,9 @@ static bt_device_host_add_on_features_t host_add_on_features;
 static uint8_t host_add_on_features_length = 0;
 static uint8_t simple_pairing_options = 0;
 static uint8_t maximum_encryption_key_size = 0;
+
+static uint16_t tx_path_value;
+static uint16_t rx_path_value;
 
 static bool readable;
 static bool ble_supported;
@@ -505,6 +509,17 @@ static future_t* start_up(void) {
     LOG_DEBUG(LOG_TAG, "%s simple pairing options is 0x%x", __func__,
         simple_pairing_options);
   }
+
+  // write rf tx & rx path compensation value
+  //TODO ifcase for checking BT version 5.0 or above
+    LOG_DEBUG(LOG_TAG, "%s hci write RF compensation values", __func__);
+    const char* tx = stack_config_get_interface()->get_le_rf_tx_path_compensation_value();
+    const char* rx = stack_config_get_interface()->get_le_rf_rx_path_compensation_value();
+    tx_path_value = (uint16_t)strtol(tx, NULL, 0);
+    rx_path_value = (uint16_t)strtol(rx, NULL, 0);
+    response =
+        AWAIT_COMMAND(packet_factory->make_ble_write_rf_path_compensation(tx_path_value, rx_path_value));
+    packet_parser->parse_generic_command_complete(response);
 
   if (bt_configstore_intf != NULL) {
     host_add_on_features_list_t features_list;

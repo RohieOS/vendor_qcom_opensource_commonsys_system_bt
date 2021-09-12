@@ -42,6 +42,8 @@ const char* PTS_BREDR_SECURECONNECTION_HOSTSUPPORT_DISABLE = "PTS_BredrSecConnHo
 const char* PTS_BREDR_INVALID_ENCRYPTION_KEYSIZE = "PTS_BredrInvalidEncryKeysize";
 const char* PTS_LE_DISABLE_ENCRYP = "PTS_LeDisableEncryp";
 const char* PTS_SMP_DISABLE_H7_SUPPORT = "PTS_DisableH7Support";
+const char* BLE_RF_TX_PATH_COMPENSATION_VALUE = "RF_TX_Path_Compensation_Value";
+const char* BLE_RF_RX_PATH_COMPENSATION_VALUE = "RF_RX_Path_Compensation_Value";
 
 static config_t* config;
 
@@ -165,6 +167,16 @@ static int get_pts_bredr_invalid_encryption_keysize(void) {
                         PTS_BREDR_INVALID_ENCRYPTION_KEYSIZE, 0);
 }
 
+static const char* get_le_rf_tx_path_compensation_value(void) {
+  return config_get_string(config, CONFIG_DEFAULT_SECTION,
+                         BLE_RF_TX_PATH_COMPENSATION_VALUE, 0x0000);
+}
+
+static const char* get_le_rf_rx_path_compensation_value(void) {
+  return config_get_string(config, CONFIG_DEFAULT_SECTION,
+                         BLE_RF_RX_PATH_COMPENSATION_VALUE, 0x0000);
+}
+
 static config_t* get_all(void) { return config; }
 
 const stack_config_t interface = {get_trace_config_enabled,
@@ -184,6 +196,8 @@ const stack_config_t interface = {get_trace_config_enabled,
                                   get_pts_bredr_invalid_encryption_keysize,
                                   get_pts_le_enc_disable,
                                   get_pts_smp_disable_h7_support,
+                                  get_le_rf_tx_path_compensation_value,
+                                  get_le_rf_rx_path_compensation_value,
                                   get_all};
 
 const stack_config_t* stack_config_get_interface(void) { return &interface; }

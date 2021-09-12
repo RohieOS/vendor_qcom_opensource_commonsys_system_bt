@@ -732,6 +732,7 @@ typedef struct {
 typedef struct {
   tBTA_DM_SEARCH_CBACK* p_search_cback;
   tBTM_INQ_INFO* p_btm_inq_info;
+  uint8_t no_inq_rnr_done;
   tBTA_SERVICE_MASK services;
   tBTA_SERVICE_MASK services_to_search;
   tBTA_SERVICE_MASK services_found;

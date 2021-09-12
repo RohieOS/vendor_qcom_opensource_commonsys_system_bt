@@ -2101,19 +2101,48 @@ void bta_av_co_check_and_add_soc_supported_codecs(const uint8_t* p_codec_info) {
 
   APPL_TRACE_DEBUG("%s: codec_name: %s", __func__, A2DP_CodecName(p_codec_info));
 
-  btav_a2dp_codec_index_t codec_index = A2DP_SourceCodecIndex(p_codec_info);
-  if (codec_index != BTAV_A2DP_CODEC_INDEX_MAX) {
-    btav_a2dp_codec_priority_t codec_priority = BTAV_A2DP_CODEC_PRIORITY_DEFAULT;
-    auto itr = codecs_priorities_.find(codec_index);
-    if (itr != codecs_priorities_.end()) {
-      codec_priority = itr->second;
-    }
-    if (codec_priority == BTAV_A2DP_CODEC_PRIORITY_DISABLED) {
-      APPL_TRACE_DEBUG("%s: codec is disabled, avoid caching", __func__);
-      return;
-    }
+  if ((strcmp(codec_name,"SBC") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_SBC)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports SBC, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
   }
-
+  if ((strcmp(codec_name,"AAC") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_AAC)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports AAC, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
+  if ((strcmp(codec_name,"aptX") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_APTX)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports aptX, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
+  if ((strcmp(codec_name,"aptX-HD") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_APTX_HD)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports aptX-HD, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
+  if ((strcmp(codec_name,"aptX-adaptive") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_APTX_ADAPTIVE)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports aptX-AD, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
+  if ((strcmp(codec_name,"aptX-TWS") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_APTX_TWS)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports aptX-TWS, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
+  if ((strcmp(codec_name,"LDAC") == 0) &&
+      A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_LDAC)) {
+    APPL_TRACE_DEBUG("%s: Both SoC and remote supports LDAC, append to supported_codecs conf", __func__);
+    bta_av_co_append_to_supported_codecs(p_codec_info);
+    return;
+  }
   if ((strcmp(codec_name,"SBC") == 0) &&
       A2DP_IsCodecEnabled(BTAV_A2DP_CODEC_INDEX_SOURCE_SBC)) {
     APPL_TRACE_DEBUG("%s: Both SoC and remote supports SBC, append to supported_codecs conf", __func__);

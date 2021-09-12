@@ -237,6 +237,8 @@ typedef uint8_t tBTA_DM_INQ_MODE;
 
 typedef uint8_t tBTA_DM_INQ_FILT;
 
+#define BTA_MAX_INQUIRY_RNR 40
+
 /* Authorize Response */
 #define BTA_DM_AUTH_PERM \
   0 /* Authorized for future connections to the service */
